@@ -1,0 +1,2 @@
+include ':app', ':spotify-app-remote', ':wearable'
+rootProject.name='Notey'
