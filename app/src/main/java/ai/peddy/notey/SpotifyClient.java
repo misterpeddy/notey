@@ -51,7 +51,7 @@ public class SpotifyClient {
         connect(listener);
     }
 
-    public CallResult<PlayerState> getPlaybackState() {
+    public CallResult<PlayerState> getPlayerState() {
         if (mSpotifyAppRemote== null || !mSpotifyAppRemote.isConnected())
             return null;
 

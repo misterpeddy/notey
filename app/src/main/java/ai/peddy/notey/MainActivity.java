@@ -6,16 +6,21 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.wearable.MessageClient;
+import com.google.android.gms.wearable.MessageEvent;
 import com.spotify.protocol.client.CallResult;
 import com.spotify.protocol.client.Subscription;
 import com.spotify.protocol.types.PlayerState;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements MessageClient.OnMessageReceivedListener {
 
-    SpotifyClient spotify;
-    Button button;
-    TextView playbackTv;
+    private static final String MAIN_ACTIVITY_TAG = "MainActivity";
+    private SpotifyClient spotify;
+    private TextView playbackPositionTv;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,25 +35,29 @@ public class MainActivity extends Activity {
                 Log.d("MainActivity", "Received: " + event.toString());
                 // TODO(peddy): Filter events and on track change flush tracker buffer to remote storage
             };
+        Toast.makeText(this, "Start", Toast.LENGTH_LONG).show();
+
+
+        playbackPositionTv = (TextView) findViewById(R.id.playback_position);
 
         spotify = SpotifyClient.getSpotifyClient(this);
         spotify.registerPlayerStateListener(callback);
 
-        button = (Button) findViewById(R.id.time_button);
-        playbackTv = (TextView) findViewById(R.id.playback_time);
-
-        button.setOnClickListener(view -> {
-            CallResult<PlayerState> stateResult = spotify.getPlaybackState();
-            Log.d("MainActivity", "playerstate: " + stateResult.toString());
-
-            stateResult.setResultCallback(playerState -> {
-                playbackTv.setText("" + playerState.playbackPosition);
-            });
-        });
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    @Override
+    public void onMessageReceived(@NonNull MessageEvent messageEvent) {
+        spotify.getPlayerState().setResultCallback(playerState -> {
+            playbackPositionTv.setText(playerState.playbackPosition + "");
+        });
+
+        Toast.makeText(this, "GOT IT", Toast.LENGTH_LONG).show();
+
+        Log.d(MAIN_ACTIVITY_TAG, "Received Message: " + messageEvent.getPath() + " : " + messageEvent.getData());
     }
 }
