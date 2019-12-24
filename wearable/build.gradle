@@ -3,9 +3,8 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
-
     defaultConfig {
-        applicationId "ai.peddy.wearable"
+        applicationId "ai.peddy.notey"
         minSdkVersion 28
         targetSdkVersion 29
         versionCode 1

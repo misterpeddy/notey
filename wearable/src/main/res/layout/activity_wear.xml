@@ -16,18 +16,18 @@
         app:boxedEdges="all">
 
         <TextView
-            android:id="@+id/tv_playback_time"
+            android:id="@+id/tv_connection_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Unknown" />
+            android:text="@string/not_connected" />
 
         <Button
-            android:id="@+id/button_playback_position"
+            android:id="@+id/button_drop_marker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Get Playback Time" />
+            android:text="@string/drop_marker_button_text" />
 
     </FrameLayout>
 </androidx.wear.widget.BoxInsetLayout>
