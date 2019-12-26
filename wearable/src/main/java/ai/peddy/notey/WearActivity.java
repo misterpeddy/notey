@@ -17,7 +17,9 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 
-public class WearActivity extends WearableActivity implements CapabilityClient.OnCapabilityChangedListener, MessageClient.OnMessageReceivedListener {
+public class WearActivity extends WearableActivity implements
+        CapabilityClient.OnCapabilityChangedListener,
+        MessageClient.OnMessageReceivedListener {
 
     private static final String WEAR_ACTIVITY_TAG = "WearActivity";
     private static final String SPOTIFY_CLIENT_CAPABILITY = "spotify_client";
@@ -33,8 +35,8 @@ public class WearActivity extends WearableActivity implements CapabilityClient.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wear);
 
-        dropMarkerButton = (Button) findViewById(R.id.button_drop_marker);
-        nowplayingTv = (TextView) findViewById(R.id.tv_now_playing);
+        dropMarkerButton = findViewById(R.id.button_drop_marker);
+        nowplayingTv = findViewById(R.id.tv_now_playing);
 
         // Make a continuously-updating 2-way connection with wearable
         Wearable.getMessageClient(this)
@@ -42,7 +44,8 @@ public class WearActivity extends WearableActivity implements CapabilityClient.O
         Wearable.getCapabilityClient(this).
                 addListener(this, SPOTIFY_CLIENT_CAPABILITY);
         Wearable.getCapabilityClient(this).
-                getCapability(SPOTIFY_CLIENT_CAPABILITY, CapabilityClient.FILTER_REACHABLE).addOnSuccessListener(capabilityInfo -> {
+                getCapability(SPOTIFY_CLIENT_CAPABILITY, CapabilityClient.FILTER_REACHABLE)
+                .addOnSuccessListener(capabilityInfo -> {
             onCapabilityChanged(capabilityInfo);
         });
 
@@ -92,10 +95,12 @@ public class WearActivity extends WearableActivity implements CapabilityClient.O
                 sendMessage(spotifyClientNode.getId(), SPOTIFY_ADD_MARKER_MESSAGE_PATH, data);
 
         sendTask.addOnSuccessListener(Integer -> {
-            Log.d(WEAR_ACTIVITY_TAG, String.format("Message [%s] successfully sent", SPOTIFY_ADD_MARKER_MESSAGE_PATH));
+            Log.d(WEAR_ACTIVITY_TAG,
+                    String.format("Message [%s] successfully sent", SPOTIFY_ADD_MARKER_MESSAGE_PATH));
             Toast.makeText(this, "Marker dropped", Toast.LENGTH_SHORT).show();
         }).addOnFailureListener(Integer -> {
-            Log.d(WEAR_ACTIVITY_TAG, String.format("Message [%s] failed to send", SPOTIFY_ADD_MARKER_MESSAGE_PATH));
+            Log.d(WEAR_ACTIVITY_TAG,
+                    String.format("Message [%s] failed to send", SPOTIFY_ADD_MARKER_MESSAGE_PATH));
             Toast.makeText(this, "Marker drop failed", Toast.LENGTH_SHORT).show();
         });
 

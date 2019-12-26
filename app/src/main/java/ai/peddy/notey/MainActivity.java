@@ -89,10 +89,12 @@ public class MainActivity extends Activity implements
      * Called when another device on the mesh sends a message to this device
      */
     public void onMessageReceived(@NonNull MessageEvent messageEvent) {
-        Log.d(MAIN_ACTIVITY_TAG, "Received Message: " + messageEvent.getPath() + " : " + messageEvent.getData());
+        Log.d(MAIN_ACTIVITY_TAG, "Received Message: " +
+                messageEvent.getPath() + " : " + messageEvent.getData());
         if (messageEvent.getPath().equals(SPOTIFY_ADD_MARKER_MESSAGE_PATH)) {
             spotify.getPlayerState().setResultCallback(playerState -> {
-                Set<Long> markers = getOrUpdateMarkers(playerState.track.uri, playerState.playbackPosition);
+                Set<Long> markers = getOrUpdateMarkers(playerState.track.uri,
+                        playerState.playbackPosition);
                 playbackPositionTv.setText(Arrays.toString(markers.toArray()));
             });
         }
@@ -116,11 +118,15 @@ public class MainActivity extends Activity implements
                     .sendMessage(wearableNode.getId(), SPOTIFY_NOW_PLAYING_PATH, nameBytes)
                     .addOnSuccessListener(Integer -> {
                         nowPlaying = playerState.track;
-                        Log.i(MAIN_ACTIVITY_TAG, String.format("Message [%s] successfully sent", SPOTIFY_ADD_MARKER_MESSAGE_PATH));
-                        Toast.makeText(this, "Marker dropped", Toast.LENGTH_SHORT).show();
+                        Log.i(MAIN_ACTIVITY_TAG, String.format("Message [%s] successfully sent",
+                                SPOTIFY_ADD_MARKER_MESSAGE_PATH));
+                        Toast.makeText(this, "Marker dropped", Toast.LENGTH_SHORT)
+                                .show();
                     }).addOnFailureListener(Integer -> {
-                Log.w(MAIN_ACTIVITY_TAG, String.format("Message [%s] failed to send", SPOTIFY_ADD_MARKER_MESSAGE_PATH));
-                Toast.makeText(this, "Marker drop failed", Toast.LENGTH_SHORT).show();
+                Log.w(MAIN_ACTIVITY_TAG, String.format("Message [%s] failed to send",
+                        SPOTIFY_ADD_MARKER_MESSAGE_PATH));
+                Toast.makeText(this, "Marker drop failed", Toast.LENGTH_SHORT)
+                        .show();
             });
             Log.i(MAIN_ACTIVITY_TAG, String.format("sent NowPlaying event: %s", nowPlaying.name));
         }

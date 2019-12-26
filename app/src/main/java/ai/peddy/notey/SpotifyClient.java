@@ -17,10 +17,9 @@ public class SpotifyClient {
     private static final String CLIENT_ID = "5fbdf1fb00b94108a62c428afb146d56";
     private static final String REDIRECT_URI = "http://notey.peddy.ai/callback";
     private static final String SPOTIFY_NOW_PLAYING_PATH = "/spotify/track/get";
-
+    private static SpotifyClient mSpotifyClient;
     private SpotifyAppRemote mSpotifyAppRemote;
     private Context mContext;
-    private static SpotifyClient mSpotifyClient;
 
     private SpotifyClient(Context context) {
         mContext = context;
@@ -47,7 +46,8 @@ public class SpotifyClient {
 
             @Override
             public void onFailure(Throwable throwable) {
-                Log.e(SPOTIFY_CLIENT_TAG, "Could not connect to Spotify: " + throwable.getMessage(), throwable);
+                Log.e(SPOTIFY_CLIENT_TAG, "Could not connect to Spotify: " +
+                        throwable.getMessage(), throwable);
             }
         };
 
@@ -55,7 +55,7 @@ public class SpotifyClient {
     }
 
     public CallResult<PlayerState> getPlayerState() {
-        if (mSpotifyAppRemote== null || !mSpotifyAppRemote.isConnected())
+        if (mSpotifyAppRemote == null || !mSpotifyAppRemote.isConnected())
             return null;
 
         return mSpotifyAppRemote.getPlayerApi().getPlayerState();
@@ -77,7 +77,8 @@ public class SpotifyClient {
                 .setRedirectUri(REDIRECT_URI)
                 .showAuthView(true)
                 .build();
-        Log.i(SPOTIFY_CLIENT_TAG, "Created ConnectionParams for client with ID: " + connectionParams.getClientId());
+        Log.i(SPOTIFY_CLIENT_TAG, "Created ConnectionParams for client with ID: " +
+                connectionParams.getClientId());
 
         SpotifyAppRemote.connect(mContext, connectionParams, connectionListener);
     }
