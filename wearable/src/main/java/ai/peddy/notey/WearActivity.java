@@ -7,18 +7,24 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.wearable.CapabilityClient;
 import com.google.android.gms.wearable.CapabilityInfo;
+import com.google.android.gms.wearable.MessageClient;
+import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
 
-public class WearActivity extends WearableActivity implements CapabilityClient.OnCapabilityChangedListener {
+public class WearActivity extends WearableActivity implements CapabilityClient.OnCapabilityChangedListener, MessageClient.OnMessageReceivedListener {
 
     private static final String WEAR_ACTIVITY_TAG = "WearActivity";
     private static final String SPOTIFY_CLIENT_CAPABILITY = "spotify_client";
     private static final String SPOTIFY_ADD_MARKER_MESSAGE_PATH = "/spotify/marker/add";
-    private TextView connectionStatusTv;
+    private static final String SPOTIFY_NOW_PLAYING_PATH = "/spotify/track/get";
+
+    private TextView nowplayingTv;
     private Button dropMarkerButton;
     private Node spotifyClientNode;
 
@@ -28,21 +34,23 @@ public class WearActivity extends WearableActivity implements CapabilityClient.O
         setContentView(R.layout.activity_wear);
 
         dropMarkerButton = (Button) findViewById(R.id.button_drop_marker);
-        connectionStatusTv = (TextView) findViewById(R.id.tv_connection_status);
+        nowplayingTv = (TextView) findViewById(R.id.tv_now_playing);
 
-        // Pre-set Spotify-capable node and set up a listener to handle changes
+        // Make a continuously-updating 2-way connection with wearable
+        Wearable.getMessageClient(this)
+                .addListener(this);
+        Wearable.getCapabilityClient(this).
+                addListener(this, SPOTIFY_CLIENT_CAPABILITY);
         Wearable.getCapabilityClient(this).
                 getCapability(SPOTIFY_CLIENT_CAPABILITY, CapabilityClient.FILTER_REACHABLE).addOnSuccessListener(capabilityInfo -> {
             onCapabilityChanged(capabilityInfo);
         });
-        Wearable.getCapabilityClient(this).
-                addListener(this, SPOTIFY_CLIENT_CAPABILITY);
 
         dropMarkerButton.setOnClickListener(button -> {
             onDropMarkerClick();
         });
 
-        // Enables Always-on
+        // Enable Always-on
         setAmbientEnabled();
     }
 
@@ -52,19 +60,22 @@ public class WearActivity extends WearableActivity implements CapabilityClient.O
      */
     public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
         for (Node node : capabilityInfo.getNodes()) {
-            if (node.isNearby()) {
-                spotifyClientNode = node;
-                break;
-            }
             spotifyClientNode = node;
+            if (node.isNearby()) break;
         }
+        Log.i(WEAR_ACTIVITY_TAG, "Connected to " + spotifyClientNode.toString());
+    }
 
-        String connectionStatus = spotifyClientNode == null ?
-                getString(R.string.not_connected) :
-                getString(R.string.connected_prefix) + " " + spotifyClientNode.getDisplayName();
-
-        connectionStatusTv.setText(connectionStatus);
-        Log.i(WEAR_ACTIVITY_TAG, connectionStatus);
+    @Override
+    /*
+     * Called on receiving message from phone; updates the nowplaying TV with track name
+     */
+    public void onMessageReceived(@NonNull MessageEvent messageEvent) {
+        Log.i(WEAR_ACTIVITY_TAG, "Received message: " + messageEvent);
+        if (messageEvent.getPath().equals(SPOTIFY_NOW_PLAYING_PATH)) {
+            String name = new String(messageEvent.getData());
+            nowplayingTv.setText(name);
+        }
     }
 
     /*
@@ -89,5 +100,4 @@ public class WearActivity extends WearableActivity implements CapabilityClient.O
         });
 
     }
-
 }

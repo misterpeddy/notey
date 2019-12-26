@@ -16,6 +16,8 @@ public class SpotifyClient {
     private static final String SPOTIFY_CLIENT_TAG = "SpotifyClient";
     private static final String CLIENT_ID = "5fbdf1fb00b94108a62c428afb146d56";
     private static final String REDIRECT_URI = "http://notey.peddy.ai/callback";
+    private static final String SPOTIFY_NOW_PLAYING_PATH = "/spotify/track/get";
+
     private SpotifyAppRemote mSpotifyAppRemote;
     private Context mContext;
     private static SpotifyClient mSpotifyClient;
@@ -26,13 +28,14 @@ public class SpotifyClient {
 
     public static SpotifyClient getSpotifyClient(Context context) {
         if (mSpotifyClient != null) return mSpotifyClient;
-        return new SpotifyClient(context);
+        mSpotifyClient = new SpotifyClient(context);
+        return mSpotifyClient;
     }
 
     /*
      * Connects to Spotify remote and registers eventCallback to listen to player state changes
      */
-    public void registerPlayerStateListener(Subscription.EventCallback eventCallback) {
+    public void registerPlayerStateListener(Subscription.EventCallback<PlayerState> eventCallback) {
         Connector.ConnectionListener listener = new Connector.ConnectionListener() {
 
             @Override
@@ -79,7 +82,7 @@ public class SpotifyClient {
         SpotifyAppRemote.connect(mContext, connectionParams, connectionListener);
     }
 
-    private boolean subscribeToPlayerState(Subscription.EventCallback eventCallback) {
+    private boolean subscribeToPlayerState(Subscription.EventCallback<PlayerState> eventCallback) {
         if (mSpotifyAppRemote == null || mSpotifyAppRemote.getPlayerApi() == null) return false;
 
         mSpotifyAppRemote.getPlayerApi().

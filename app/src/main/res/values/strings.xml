@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Notey</string>
+    <string name="session_markers_prefs_file">session_markers_prefs_file</string>
 </resources>
