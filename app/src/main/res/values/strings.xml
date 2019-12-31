@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Notey</string>
     <string name="session_markers_prefs_file">session_markers_prefs_file</string>
+    <string name="notey_service_description">Required communication and coordination with Wear OS application</string>
 </resources>
