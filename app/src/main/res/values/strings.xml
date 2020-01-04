@@ -1,5 +1,14 @@
 <resources>
+    // App configuration and descriptions
     <string name="app_name">Notey</string>
-    <string name="session_markers_prefs_file">session_markers_prefs_file</string>
     <string name="notey_service_description">Required communication and coordination with Wear OS application</string>
+    <string name="session_markers_prefs_file">session_markers_prefs_file</string>
+
+    // View texts
+    <string name="google_sign_in_state_message">Currently signed into: </string>
+    <string name="export_notes_button_text">Export Notes</string>
+
+    // Toast texts
+    <string name="toast_text_export_failed">Export to Google Drive failed - try signing in again</string>
+
 </resources>
