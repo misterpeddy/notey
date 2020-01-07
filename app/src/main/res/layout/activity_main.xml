@@ -1,26 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/view_margin_small"
+        android:gravity="center_horizontal"
+        android:layout_above="@+id/google_sign_in_layout"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/local_notes_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin_large"
+            android:text="@string/local_notes_title"
+            android:textSize="@dimen/font_size_medium"
+            android:textAlignment="center" />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/local_notes_lv"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:id="@+id/google_sign_in_layout"
-        app:layout_constraintTop_toTopOf="parent">
+        android:padding="@dimen/padding_layout_small"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/google_sign_in_layout">
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/google_sign_in_btn"
             android:layout_width="@dimen/button_width"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/button_margin_small" />
+            android:layout_margin="@dimen/view_margin_small" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -47,22 +70,4 @@
 
     </LinearLayout>
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/button_margin_small"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/button_margin_small"
-            android:id="@+id/export_notes_btn"
-            android:text="@string/export_notes_button_text"/>
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

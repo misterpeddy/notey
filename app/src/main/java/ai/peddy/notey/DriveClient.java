@@ -13,12 +13,21 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.http.AbstractInputStreamContent;
+import com.google.api.client.http.ByteArrayContent;
+import com.google.api.client.http.FileContent;
+import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -27,6 +36,9 @@ public class DriveClient {
     final static public int REQUEST_CODE_SIGN_IN = 1;
 
     final static private String TAG = "DriveClient";
+    final static private String PLAIN_TEXT_TYPE = "text/plain";
+    final static private String GOOGLE_DOC_MIMETYPE = "application/vnd.google-apps.document";
+
 
     static private DriveClient instance;
 
@@ -39,9 +51,8 @@ public class DriveClient {
     }
 
     public static DriveClient getInstance(Activity activity){
-        if (instance != null)
-                return instance;
-        instance = new DriveClient(activity);
+        if (instance == null)
+            instance = new DriveClient(activity);
         if (instance.getSignedInAccount() != null)
             instance.service = instance.getDriveServiceForAccount(instance.getSignedInAccount());
         return instance;
@@ -70,9 +81,22 @@ public class DriveClient {
     }
 
     public Task<FileList> getFiles() {
-        if (service != null)
-            return Tasks.call(mExecutor, () -> service.files().list().setSpaces("drive").execute());
-        return Tasks.forException(new IllegalStateException("Drive Service not yet initialized"));
+        if (service == null)
+            return Tasks.forException(new IllegalStateException("Drive Service not yet initialized"));
+
+        return Tasks.call(mExecutor, () -> service.files().list().setSpaces("drive").execute());
+    }
+
+    public Task<File> uploadFile(String name, String content) {
+        if (service == null)
+            return Tasks.forException(new IllegalStateException("Drive Service not yet initialized"));
+
+        ByteArrayContent contentStream = ByteArrayContent.fromString(PLAIN_TEXT_TYPE, content);
+        File fileMetadata = new File()
+                .setName(name)
+                .setMimeType(GOOGLE_DOC_MIMETYPE);
+
+        return Tasks.call(mExecutor, () -> service.files().create(fileMetadata, contentStream).execute());
     }
 
     private Drive getDriveServiceForAccount(GoogleSignInAccount account) {

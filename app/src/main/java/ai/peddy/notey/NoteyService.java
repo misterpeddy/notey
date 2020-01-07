@@ -19,24 +19,33 @@ import com.spotify.protocol.client.Subscription;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/*
+ * In charge of all services Notey offers to the Activity:
+ * - Communication with the Spotify remote over RPC
+ * - Discovery and messaging with the Wearables on the mesh
+ */
 public class NoteyService extends Service implements
         Subscription.EventCallback<PlayerState>,
         MessageClient.OnMessageReceivedListener,
         CapabilityClient.OnCapabilityChangedListener {
+
+    public static final String TRACK_URI_NAME_DELIM = "<:>";
 
     private static final String TAG = "NoteyService";
     private static final String MARKER_CLIENT_CAPABILITY = "marker_client";
     private static final String SPOTIFY_ADD_MARKER_MESSAGE_PATH = "/spotify/marker/add";
     private static final String SPOTIFY_NOW_PLAYING_PATH = "/spotify/track/get";
 
-    private SharedPreferences sharedPreferences;
     private Track nowPlaying;
     private Node wearableNode;
     private SpotifyClient spotify;
+    private SharedPreferences sharedPreferences;
 
     /*
      * Called when Service is created
@@ -60,17 +69,13 @@ public class NoteyService extends Service implements
                 getString(R.string.session_markers_prefs_file), MODE_PRIVATE);
 
         Log.i(TAG, "NoteyService successfully created");
-        // TODO(peddy): Create a separate HandlerThread if we start doing things in SettingsActivity
     }
 
     /*
      * Called each time Service is started
      */
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
-        return START_STICKY;
-    }
+    public int onStartCommand(Intent intent, int flags, int startId) { return START_STICKY; }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -86,8 +91,8 @@ public class NoteyService extends Service implements
                  messageEvent.getPath() + " : " + messageEvent.getData());
          if (messageEvent.getPath().equals(SPOTIFY_ADD_MARKER_MESSAGE_PATH)) {
              spotify.getPlayerState().setResultCallback(playerState -> {
-                 updateMarkers(playerState.track.uri,
-                         playerState.playbackPosition);
+                 updateMarkers(playerState.track.uri + TRACK_URI_NAME_DELIM
+                                 + playerState.track.name, playerState.playbackPosition);
              });
          }
      }
@@ -130,41 +135,32 @@ public class NoteyService extends Service implements
                     nowPlaying = playerState.track;
                     Log.i(TAG, String.format("Message [%s] successfully sent",
                             SPOTIFY_NOW_PLAYING_PATH));
-                    Toast.makeText(this, "Marker dropped", Toast.LENGTH_SHORT)
+                    Toast.makeText(this, "Wearable updated", Toast.LENGTH_SHORT)
                             .show();
                 }).addOnFailureListener(Integer -> {
                     Log.w(TAG, String.format("Message [%s] failed to send",
-                            SPOTIFY_ADD_MARKER_MESSAGE_PATH));
-                    Toast.makeText(this, "Marker drop failed", Toast.LENGTH_SHORT)
+                            SPOTIFY_NOW_PLAYING_PATH));
+                    Toast.makeText(this, "Wearable update failed", Toast.LENGTH_SHORT)
                             .show();
                 });
-        Log.i(TAG, String.format("sent NowPlaying event: %s", nowPlaying.name));
     }
 
     /*
      * Retrieves the current set of markers for track URI, and adds playbackPosition to it
      * If playbackPosition is null, returns only the existing markers for the track URI
-     * TODO(peddy): Avoid reconstruction of set on every addition
      */
-    private Set<Long> updateMarkers(String uri, Long playbackPosition) {
+    public Set<Long> updateMarkers(String uriTitle, Long playbackPosition) {
         Set<String> markers = new HashSet<>();
-        markers = sharedPreferences.getStringSet(uri, markers);
+        markers = new HashSet(sharedPreferences.getStringSet(uriTitle, markers));
 
         if (playbackPosition != null) {
             markers.add(String.format("%d", playbackPosition));
-            sharedPreferences.edit().putStringSet(uri, markers).commit();
+            sharedPreferences.edit().putStringSet(uriTitle, markers).commit();
+            Log.i(TAG, String.format("Added marker at %d for entry %s", playbackPosition, uriTitle));
         }
+
         return markers.stream()
                         .map(Long::parseLong)
                         .collect(Collectors.toSet());
-    }
-
-    private Set<Long> getMarkers(String uri) {
-        Set<String> markers = new HashSet<>();
-        markers = sharedPreferences.getStringSet(uri, markers);
-
-        return markers.stream()
-                .map(Long::parseLong)
-                .collect(Collectors.toSet());
     }
 }

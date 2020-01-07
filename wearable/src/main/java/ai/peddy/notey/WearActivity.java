@@ -3,6 +3,7 @@ package ai.peddy.notey;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +28,6 @@ public class WearActivity extends WearableActivity implements
     private static final String SPOTIFY_NOW_PLAYING_PATH = "/spotify/track/get";
 
     private TextView nowplayingTv;
-    private Button dropMarkerButton;
     private Node spotifyClientNode;
 
     @Override
@@ -35,23 +35,17 @@ public class WearActivity extends WearableActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wear);
 
-        dropMarkerButton = findViewById(R.id.button_drop_marker);
         nowplayingTv = findViewById(R.id.tv_now_playing);
+        findViewById(R.id.take_note_btn).setOnClickListener(this::onTakeNoteClicked);
 
-        // Make a continuously-updating 2-way connection with wearable
+        // Make a continuously-updating 2-way connection with phone
         Wearable.getMessageClient(this)
                 .addListener(this);
         Wearable.getCapabilityClient(this).
                 addListener(this, SPOTIFY_CLIENT_CAPABILITY);
         Wearable.getCapabilityClient(this).
                 getCapability(SPOTIFY_CLIENT_CAPABILITY, CapabilityClient.FILTER_REACHABLE)
-                .addOnSuccessListener(capabilityInfo -> {
-            onCapabilityChanged(capabilityInfo);
-        });
-
-        dropMarkerButton.setOnClickListener(button -> {
-            onDropMarkerClick();
-        });
+                .addOnSuccessListener(this::onCapabilityChanged);
 
         // Enable Always-on
         setAmbientEnabled();
@@ -66,7 +60,14 @@ public class WearActivity extends WearableActivity implements
             spotifyClientNode = node;
             if (node.isNearby()) break;
         }
-        Log.i(WEAR_ACTIVITY_TAG, "Connected to " + spotifyClientNode.toString());
+        if (spotifyClientNode != null) {
+            Log.i(WEAR_ACTIVITY_TAG,
+                    String.format("%s %s",
+                            getString(R.string.connected_prefix), spotifyClientNode.toString()));
+            nowplayingTv.setText(
+                    String.format("%s %s",
+                            getString(R.string.connected_prefix), spotifyClientNode.getDisplayName()));
+        }
     }
 
     @Override
@@ -84,7 +85,7 @@ public class WearActivity extends WearableActivity implements
     /*
      * Tries to send a message to drop marker to Spotify client node
      */
-    private void onDropMarkerClick() {
+    private void onTakeNoteClicked(View view) {
         if (spotifyClientNode == null) {
             Log.w(WEAR_ACTIVITY_TAG, "Not connected to Spotify Client Node");
             return;

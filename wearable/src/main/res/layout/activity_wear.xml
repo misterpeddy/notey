@@ -20,15 +20,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:textAlignment="center"
             android:text="@string/not_connected" />
 
         <Button
-            android:id="@+id/button_drop_marker"
+            android:id="@+id/take_note_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/screen_percentage_15"
-            android:text="@string/drop_marker_button_text" />
+            android:text="@string/take_note_button_text" />
 
     </FrameLayout>
 </androidx.wear.widget.BoxInsetLayout>

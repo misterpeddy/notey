@@ -16,8 +16,9 @@ public class SpotifyClient {
     private static final String SPOTIFY_CLIENT_TAG = "SpotifyClient";
     private static final String CLIENT_ID = "5fbdf1fb00b94108a62c428afb146d56";
     private static final String REDIRECT_URI = "http://notey.peddy.ai/callback";
-    private static final String SPOTIFY_NOW_PLAYING_PATH = "/spotify/track/get";
-    private static SpotifyClient mSpotifyClient;
+
+    private static SpotifyClient instance;
+
     private SpotifyAppRemote mSpotifyAppRemote;
     private Context mContext;
 
@@ -26,9 +27,9 @@ public class SpotifyClient {
     }
 
     public static SpotifyClient getSpotifyClient(Context context) {
-        if (mSpotifyClient != null) return mSpotifyClient;
-        mSpotifyClient = new SpotifyClient(context);
-        return mSpotifyClient;
+        if (instance == null)
+            instance = new SpotifyClient(context);
+        return instance;
     }
 
     /*

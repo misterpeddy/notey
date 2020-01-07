@@ -4,7 +4,7 @@ Do you go on long runs but hate running?
 
 Do you listen to podcasts to make it suck less?
 
-Are you used to noting down interesting points the speakers make, but can't while running 5 MPH?
+Do you want to note down interesting points the speakers make, but can't while running 5 MPH?
 
 Do you wish you could somehow tap your smart watch when you hear an interesting point, and it figures out what to take notes of? 
 
@@ -20,6 +20,16 @@ Notey uses your Spotify account to re-listen to the neighborhoods in which the m
 
 You can then correct its mistakes and provide it with valuable feedback on what you were actually interested in.
 Over time, it should get smarter :)
+
+## Usage
+
+The Wear OS app is very simple - it shows you what you're listening to right now, and allows you to let Notey know you want to take note of what was just discussed.
+
+<img src=".idea/images/watch.png" height="200">
+
+After installing the Android companion app, you'll log into both your Google account (to access Google Docs) and Spotify. You will use the app to upload the notes that Notey has taken for you to a Google Doc.
+
+<img src=".idea/images/phone.png" height="500">
 
 ## Design
 

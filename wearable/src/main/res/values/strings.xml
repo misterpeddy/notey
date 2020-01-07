@@ -2,5 +2,5 @@
     <string name="app_name">Notey</string>
     <string name="not_connected">Not Connected</string>
     <string name="connected_prefix">Connected to</string>
-    <string name="drop_marker_button_text">Drop Marker</string>
+    <string name="take_note_button_text">Take Note</string>
 </resources>

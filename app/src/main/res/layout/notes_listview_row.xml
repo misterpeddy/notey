@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/notes_lv_row_note_name"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginEnd="50dp"
+        android:padding="@dimen/padding_lv_row_tv"
+        android:layout_toStartOf="@+id/notes_lv_row_note_btn"
+        android:text="The best podcast..." />
+
+    <Button
+        android:id="@+id/notes_lv_row_note_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:onClick="uploadNote"
+        android:padding="@dimen/padding_lv_row_btn"
+        android:layout_centerInParent="true"
+        android:layout_alignParentRight="true"
+        android:text="Upload"/>
+
+</RelativeLayout>

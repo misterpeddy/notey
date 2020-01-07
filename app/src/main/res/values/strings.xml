@@ -7,6 +7,7 @@
     // View texts
     <string name="google_sign_in_state_message">Currently signed into: </string>
     <string name="export_notes_button_text">Export Notes</string>
+    <string name="local_notes_title">On-Device Captured Notes</string>
 
     // Toast texts
     <string name="toast_text_export_failed">Export to Google Drive failed - try signing in again</string>

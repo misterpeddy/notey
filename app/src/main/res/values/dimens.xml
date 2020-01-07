@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="button_margin_small">10dp</dimen>
-    <dimen name="button_width">200dp</dimen>
+
+    // View sizes
+    <dimen name="button_width">150dp</dimen>
+
+    // Margin and padding sizes
+    <dimen name="view_margin_small">10dp</dimen>
     <dimen name="text_margin_small">1dp</dimen>
+    <dimen name="text_margin_large">20dp</dimen>
+    <dimen name="padding_lv_row_tv">15dp</dimen>
+    <dimen name="padding_lv_row_btn">15dp</dimen>
+    <dimen name="padding_layout_small">15dp</dimen>
+
+    // Text sizes
+    <dimen name="font_size_medium">20dp</dimen>
 </resources>
