@@ -1,8 +1,16 @@
 package ai.peddy.notey;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.media.AudioRecord;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -29,6 +37,7 @@ import java.util.stream.Collectors;
  * In charge of all services Notey offers to the Activity:
  * - Communication with the Spotify remote over RPC
  * - Discovery and messaging with the Wearables on the mesh
+ * - Recording audio from other apps
  */
 public class NoteyService extends Service implements
         Subscription.EventCallback<PlayerState>,
@@ -68,6 +77,7 @@ public class NoteyService extends Service implements
         sharedPreferences = getSharedPreferences(
                 getString(R.string.session_markers_prefs_file), MODE_PRIVATE);
 
+        displayNotification();
         Log.i(TAG, "NoteyService successfully created");
     }
 
@@ -75,11 +85,14 @@ public class NoteyService extends Service implements
      * Called each time Service is started
      */
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) { return START_STICKY; }
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "Service started");
+        return START_STICKY;
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        throw new UnsupportedOperationException("This service cannot be bound to.");
     }
 
      @Override
@@ -94,6 +107,7 @@ public class NoteyService extends Service implements
                  updateMarkers(playerState.track.uri + TRACK_URI_NAME_DELIM
                                  + playerState.track.name, playerState.playbackPosition);
              });
+             AudioRecorder.getInstance(getApplicationContext()).captureWindow();
          }
      }
 
@@ -160,7 +174,32 @@ public class NoteyService extends Service implements
         }
 
         return markers.stream()
-                        .map(Long::parseLong)
-                        .collect(Collectors.toSet());
+                .map(Long::parseLong)
+                .collect(Collectors.toSet());
+    }
+
+
+    private void displayNotification() {
+        Notification.Builder builder = new Notification.Builder(this);
+        Intent nfIntent = new Intent(this, MainActivity.class);
+
+        builder.setContentIntent(PendingIntent.getActivity(this, 0, nfIntent, 0))
+                .setContentTitle("Notey Audio Capture")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentText("is running......")
+                .setWhen(System.currentTimeMillis());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder.setChannelId("notification_id");
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            NotificationChannel channel = new NotificationChannel("notification_id", "notification_name", NotificationManager.IMPORTANCE_LOW);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        Notification notification = builder.build();
+        startForeground(110, notification);
     }
 }
